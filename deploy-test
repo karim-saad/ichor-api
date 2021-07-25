@@ -1,4 +1,0 @@
-#!/bin/sh
-7z a -tzip $1.zip src/common src/$1
-
-aws lambda update-function-code --function-name test-$1 --zip-file fileb://$1.zip --profile ichor
