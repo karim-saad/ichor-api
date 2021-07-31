@@ -3,12 +3,21 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   SAM Template for Ichor Products
 
+Parameters:
+  Stage:
+    Type: String
+    Default: prod
+
 Globals:
   Function:
     Timeout: 120
 
 Resources:
-  ProductsFunction:
+  ApiDeployment:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref Stage
+  GetProductsFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: products/
@@ -20,17 +29,18 @@ Resources:
           Properties:
             Path: /products
             Method: get
+            RestApiId: !Ref ApiDeployment
       Policies:
         - DynamoDBReadPolicy: { TableName: products }
 
   ProductsTable:
     Type: AWS::DynamoDB::Table
     Properties:
+      TableName: products
+      BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
-        - AttributeName: "id"
-          AttributeType: "S"
+        - AttributeName: id
+          AttributeType: S
       KeySchema:
-        - AttributeName: "id"
-          KeyType: "HASH"
-      TableName: "products"
-      BillingMode: "PAY_PER_REQUEST"
+        - AttributeName: id
+          KeyType: HASH
