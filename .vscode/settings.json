@@ -1,0 +1,7 @@
+{
+    "python.linting.pylintEnabled": true,
+    "yaml.customTags": [
+        "!GetAtt",
+        "!Ref"
+    ]
+}

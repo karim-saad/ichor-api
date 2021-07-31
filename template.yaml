@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  SAM Template for Ichor Products
+
+Globals:
+  Function:
+    Timeout: 120
+
+Resources:
+  ProductsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: products/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Events:
+        Products:
+          Type: Api
+          Properties:
+            Path: /products
+            Method: get
+      Policies:
+        - DynamoDBReadPolicy: { TableName: products }
+
+  ProductsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "id"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "id"
+          KeyType: "HASH"
+      TableName: "products"
+      BillingMode: "PAY_PER_REQUEST"
