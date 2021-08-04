@@ -17,14 +17,16 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: !Ref Stage
-  GetProductsFunction:
+
+  ProductsFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: products/
+      FunctionName: products
       Handler: app.lambda_handler
       Runtime: python3.8
       Events:
-        Products:
+        GetProducts:
           Type: Api
           Properties:
             Path: /products
@@ -41,6 +43,15 @@ Resources:
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
+        - AttributeName: internalName
+          AttributeType: S
       KeySchema:
         - AttributeName: id
           KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: internalName
+          KeySchema:
+            - AttributeName: internalName
+              KeyType: HASH
+          Projection:
+            ProjectionType: "KEYS_ONLY"

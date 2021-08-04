@@ -2,7 +2,7 @@
     "scripts": {
         "build": "sam build",
         "deploy": "npm run build && sam deploy",
-        "dev": "sam local invoke --profile ichor",
+        "invoke": "sam local invoke --profile ichor",
         "lint": "pylint"
     }
 }
