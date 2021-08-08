@@ -10,6 +10,7 @@ Parameters:
 
 Globals:
   Function:
+    Runtime: python3.8
     Timeout: 120
 
 Resources:
@@ -24,12 +25,17 @@ Resources:
       CodeUri: products/
       FunctionName: products
       Handler: app.lambda_handler
-      Runtime: python3.8
       Events:
         GetProducts:
           Type: Api
           Properties:
             Path: /products
+            Method: get
+            RestApiId: !Ref ApiDeployment
+        GetProduct:
+          Type: Api
+          Properties:
+            Path: /product/{internalName}
             Method: get
             RestApiId: !Ref ApiDeployment
       Policies:
@@ -54,4 +60,4 @@ Resources:
             - AttributeName: internalName
               KeyType: HASH
           Projection:
-            ProjectionType: "KEYS_ONLY"
+            ProjectionType: "ALL"

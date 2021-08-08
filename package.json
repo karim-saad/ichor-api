@@ -3,6 +3,7 @@
         "build": "sam build",
         "deploy": "npm run build && sam deploy",
         "invoke": "sam local invoke --profile ichor",
-        "lint": "pylint"
+        "lint": "pylint",
+        "start-api": "sam local start-api --profile ichor"
     }
 }
