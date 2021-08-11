@@ -1,5 +1,5 @@
 '''
-Entry file for products Lambda
+Entry file for collections Lambda
 '''
 import json
 
@@ -9,31 +9,31 @@ from boto3.dynamodb.conditions import Key
 
 def lambda_handler(event, _context):
     '''
-    Products lambda function
+    Collections lambda function
     '''
 
-    products_table = boto3.resource('dynamodb').Table('products')
+    collections_table = boto3.resource('dynamodb').Table('collections')
     split_path = event['path'][1:].split('/')
     path, path_params = split_path[0], split_path[1:]
 
-    if path == 'products':
-        products = products_table.scan()['Items']
+    if path == 'collections':
+        collections = collections_table.scan()['Items']
         return {
             'statusCode': 200,
             'body': json.dumps({
-                'products': products,
+                'collections': collections,
             })
         }
 
-    if path == 'product':
-        products = products_table.query(
+    if path == 'collection':
+        collections = collections_table.query(
             IndexName='handle',
             KeyConditionExpression=Key('handle').eq(path_params[0])
         )['Items']
         return {
             'statusCode': 200,
             'body': json.dumps({
-                'product': products[0]
+                'collection': collections[0]
             })
         }
 

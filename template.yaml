@@ -35,11 +35,33 @@ Resources:
         GetProduct:
           Type: Api
           Properties:
-            Path: /product/{internalName}
+            Path: /product/{handle}
             Method: get
             RestApiId: !Ref ApiDeployment
       Policies:
         - DynamoDBReadPolicy: { TableName: products }
+
+  CollectionsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: collections/
+      FunctionName: collections
+      Handler: app.lambda_handler
+      Events:
+        GetCollections:
+          Type: Api
+          Properties:
+            Path: /collections
+            Method: get
+            RestApiId: !Ref ApiDeployment
+        GetCollection:
+          Type: Api
+          Properties:
+            Path: /collections/{handle}
+            Method: get
+            RestApiId: !Ref ApiDeployment
+      Policies:
+        - DynamoDBReadPolicy: { TableName: collections }
 
   ProductsTable:
     Type: AWS::DynamoDB::Table
@@ -49,15 +71,48 @@ Resources:
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
-        - AttributeName: internalName
+        - AttributeName: handle
           AttributeType: S
       KeySchema:
         - AttributeName: id
           KeyType: HASH
       GlobalSecondaryIndexes:
-        - IndexName: internalName
+        - IndexName: handle
           KeySchema:
-            - AttributeName: internalName
+            - AttributeName: handle
               KeyType: HASH
           Projection:
             ProjectionType: "ALL"
+
+  CollectionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: collections
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: handle
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: handle
+          KeySchema:
+            - AttributeName: handle
+              KeyType: HASH
+          Projection:
+            ProjectionType: "ALL"
+
+  CollectionsProductsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: collections_products
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: collection_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: collection_id
+          KeyType: HASH
