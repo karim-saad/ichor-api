@@ -19,10 +19,11 @@ def handler(event, _context):
     auth_policy.rest_api_id = split_gateway_arn[0]
     auth_policy.region = split_method_arn[3]
     auth_policy.stage = split_gateway_arn[1]
-    auth_policy.deny_all_methods()
 
     if event['authorizationToken'] == os.getenv('AUTH_TOKEN'):
         auth_policy.allow_all_methods()
+    else:
+        auth_policy.deny_all_methods()
 
     auth_response = auth_policy.build()
     return auth_response
