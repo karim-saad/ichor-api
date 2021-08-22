@@ -3,13 +3,9 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   SAM Template for Ichor Products
 
-Parameters:
-  Stage:
-    Type: String
-    Default: prod
-
 Globals:
   Function:
+    Handler: app.handler
     Runtime: python3.8
     Timeout: 120
 
@@ -18,24 +14,32 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: !Ref Stage
+      Auth:
+        DefaultAuthorizer: LambdaTokenAuthorizer
+        Authorizers:
+          LambdaTokenAuthorizer:
+            FunctionArn: !GetAtt AuthFunction.Arn
+
+  AuthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: auth
+      FunctionName: auth
+      Environment:
+        Variables:
+          AUTH_TOKEN: !Ref AuthToken
+          PRINCIPAL_ID: !Ref PrincipalID
 
   ProductsFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: products/
+      CodeUri: products
       FunctionName: products
-      Handler: app.lambda_handler
       Events:
         GetProducts:
           Type: Api
           Properties:
             Path: /products
-            Method: get
-            RestApiId: !Ref ApiDeployment
-        GetProduct:
-          Type: Api
-          Properties:
-            Path: /product/{handle}
             Method: get
             RestApiId: !Ref ApiDeployment
       Policies:
@@ -44,20 +48,13 @@ Resources:
   CollectionsFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: collections/
+      CodeUri: collections
       FunctionName: collections
-      Handler: app.lambda_handler
       Events:
         GetCollections:
           Type: Api
           Properties:
             Path: /collections
-            Method: get
-            RestApiId: !Ref ApiDeployment
-        GetCollection:
-          Type: Api
-          Properties:
-            Path: /collections/{handle}
             Method: get
             RestApiId: !Ref ApiDeployment
       Policies:

@@ -1,9 +1,9 @@
 {
     "scripts": {
-        "build": "sam build",
+        "build": "python populate_template.py && sam build",
         "deploy": "npm run build && sam deploy",
         "invoke": "sam local invoke --profile ichor",
         "lint": "pylint",
-        "start-api": "sam local start-api --profile ichor"
+        "start-api": "npm run build && sam local start-api --profile ichor"
     }
 }

@@ -7,37 +7,35 @@ import boto3
 from boto3.dynamodb.conditions import Key
 
 
-def lambda_handler(event, _context):
+def handler(event, _context):
     '''
     Products lambda function
     '''
-
-    products_table = boto3.resource('dynamodb').Table('products')
-    split_path = event['path'][1:].split('/')
-    path, path_params = split_path[0], split_path[1:]
-
-    if path == 'products':
-        products = products_table.scan()['Items']
-        return {
-            'statusCode': 200,
-            'body': json.dumps({
-                'products': products,
-            })
-        }
-
-    if path == 'product':
-        products = products_table.query(
-            IndexName='handle',
-            KeyConditionExpression=Key('handle').eq(path_params[0])
-        )['Items']
-        return {
-            'statusCode': 200,
-            'body': json.dumps({
-                'product': products[0]
-            })
-        }
-
+    query_params = event['queryStringParameters']
+    products = get_product_by_handle(
+        query_params['handle']) if query_params else get_all_products()
     return {
-        'statusCode': 400,
-        'body': 'You messed up.'
+        'statusCode': 200,
+        'body': json.dumps({
+            'products': products
+        })
     }
+
+
+def get_product_by_handle(handle):
+    '''
+    Get specific products that match on handle
+    '''
+    products_table = boto3.resource('dynamodb').Table('products')
+    return products_table.query(
+        IndexName='handle',
+        KeyConditionExpression=Key('handle').eq(handle)
+    )['Items']
+
+
+def get_all_products():
+    '''
+    Get all products
+    '''
+    products_table = boto3.resource('dynamodb').Table('products')
+    return products_table.scan()['Items']
