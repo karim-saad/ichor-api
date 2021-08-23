@@ -1,7 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
-Description: >
-  SAM Template for Ichor API
+Description: SAM Template for Ichor API
 
 Globals:
   Function:
@@ -20,6 +19,29 @@ Resources:
           LambdaTokenAuthorizer:
             FunctionArn: !GetAtt AuthFunction.Arn
 
+  AdministratorRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: administrator-role
+      Description: Administrator role to be used internally
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - "apigateway.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: "*"
+                Resource: "*"
+
   AuthFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -28,7 +50,7 @@ Resources:
       Environment:
         Variables:
           AUTH_TOKEN: !Ref AuthToken
-          PRINCIPAL_ID: !Ref PrincipalID
+          PRINCIPAL_ID: !GetAtt AdministratorRole.Arn
 
   ProductsFunction:
     Type: AWS::Serverless::Function
