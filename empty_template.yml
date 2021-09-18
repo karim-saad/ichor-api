@@ -47,6 +47,22 @@ Resources:
             Priority: 1
       EmailVerificationSubject: Ichor Jewellery - Verification Code
 
+  GeneralAppClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: GeneralAppClient
+      UserPoolId: !Ref GeneralUserPool
+      GenerateSecret: true
+      PreventUserExistenceErrors: ENABLED
+      CallbackURLs:
+        - https://ichorjewellery.com
+      LogoutURLs:
+        - https://ichorjewellery.com
+      ExplicitAuthFlows:
+        - ALLOW_ADMIN_USER_PASSWORD_AUTH
+        - ALLOW_CUSTOM_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+
   AdministratorRole:
     Type: AWS::IAM::Role
     Properties:
