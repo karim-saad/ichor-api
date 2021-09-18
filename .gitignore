@@ -2,3 +2,5 @@
 params.json
 samconfig.toml
 template.yml
+
+*/node_modules/**/*

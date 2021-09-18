@@ -19,6 +19,34 @@ Resources:
           LambdaTokenAuthorizer:
             FunctionArn: !GetAtt AuthFunction.Arn
 
+  GeneralUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: GeneralUserPool
+      UsernameAttributes:
+        - email
+      UsernameConfiguration:
+        CaseSensitive: true
+      AutoVerifiedAttributes:
+        - email
+      Schema:
+        - Name: email
+          Required: true
+          Mutable: false
+          AttributeDataType: String
+        - Name: name
+          Required: true
+          Mutable: true
+          AttributeDataType: String
+      MfaConfiguration: OPTIONAL
+      EnabledMfas:
+        - SOFTWARE_TOKEN_MFA
+      AccountRecoverySetting:
+        RecoveryMechanisms:
+          - Name: verified_email
+            Priority: 1
+      EmailVerificationSubject: Ichor Jewellery - Verification Code
+
   AdministratorRole:
     Type: AWS::IAM::Role
     Properties:
